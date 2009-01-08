@@ -1,0 +1,3 @@
+Create all XML test resources here - these might be needed for populating JIRA instance at the integration-test phase with test data.
+
+Please remove this file before releasing your plugin.

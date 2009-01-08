@@ -1,0 +1,14 @@
+<projectDescription>
+  <name>jira-plugin-irccat</name>
+  <comment>Parent POM for JIRA plugins. Specifies which version of Java to compile
+        against, and Maven repositories for JIRA and its dependencies.</comment>
+  <projects/>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>

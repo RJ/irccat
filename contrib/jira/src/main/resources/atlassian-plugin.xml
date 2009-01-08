@@ -1,0 +1,7 @@
+<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}">
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="Last.fm" url="http://www.last.fm"/>
+    </plugin-info>
+</atlassian-plugin>
