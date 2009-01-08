@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<irccat-definition>
+
+	<!-- The IRC Server the bot will connect to -->
+	<server>
+		<address>irc.example.com</address>
+		<port>6667</port>
+		<password/>
+	</server>
+	
+	<bot>
+		<nick>irccat</nick>
+		<!-- The number of milliseconds between each outgoing message in the bot's queue -->
+		<messagedelay>250</messagedelay>
+	</bot>
+	
+	<!-- Address/port to listen on for data to cat to IRC -->
+	<cat>
+		<port>12345</port>
+		<ip>127.0.0.1</ip>
+	</cat>
+	
+	<!-- Settings for calling external scripts to handle commands -->
+	<script>
+		<cmdhandler>scripts/cmd_handler.sh</cmdhandler>
+		<maxresponselines>15</maxresponselines>
+	</script>
+	
+	<!-- Which channels to join on startup -->
+	<!-- First channel in list is "default channel", and all members are implicitly trusted -->
+	<channels>
+		<channel>
+			<name>testchan1</name>
+			<password>blah</password>
+		</channel>
+		<channel>
+			<name>testchan2</name>
+		</channel>
+	</channels>
+	
+</irccat-definition>

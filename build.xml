@@ -1,0 +1,47 @@
+<project name="IRCCat" default="dist" basedir=".">
+	<property name="src.dir" location="src"/>
+	<property name="lib.dir" location="libs"/>
+	<property name="build.dir" location="build"/>
+	<property name="dist.dir"  location="dist"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+		<fileset dir="${dist.dir}" includes="**/*.jar"/>
+    </path>
+
+	<target name="init">
+	    <tstamp/>
+	    <mkdir dir="${build.dir}"/>
+		<mkdir dir="${dist.dir}"/>
+	</target>
+
+
+
+  <target name="compile" depends="init">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="classpath"/>
+  </target>
+
+  <target name="dist" depends="compile">
+    <mkdir dir="${dist.dir}"/>
+    <jar jarfile="${dist.dir}/irccat.jar" basedir="${build.dir}"/>
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
+  </target>
+
+    <target name="run">
+        <java fork="false" classname="fm.last.irccat.IRCCat">
+            <classpath>
+                <path refid="classpath"/>
+                <path location="${dist.dir}/irccat.jar"/>
+            </classpath>
+			<arg value="${configfile}" />
+        </java>
+    </target>
+
+</project>
