@@ -237,7 +237,7 @@ public class IRCCat extends PircBot {
 			// irccat builtin command processing:
 			String resp = handleBuiltInCommand(message.substring(1).trim(),
 					sender);
-			if (!resp.isEmpty())
+			if (!(resp == null || resp.equals("")))
 				sendMessage(respondTo, resp);
             
             System.out.println("Built-in: ["+respondTo+"] <"+sender+"> "+message);
