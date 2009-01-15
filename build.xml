@@ -3,6 +3,8 @@
 	<property name="lib.dir" location="libs"/>
 	<property name="build.dir" location="build"/>
 	<property name="dist.dir"  location="dist"/>
+    <property name="example.dir" location="examples" />
+    <property name="project.name" value="irccat" />
 
     <path id="classpath">
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -22,10 +24,25 @@
     <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="classpath" debug="on"/>
   </target>
 
-  <target name="dist" depends="compile">
+  <target name="jar" depends="compile">
     <mkdir dir="${dist.dir}"/>
-    <jar jarfile="${dist.dir}/irccat.jar" basedir="${build.dir}"/>
+    <jar jarfile="${dist.dir}/${project.name}.jar" basedir="${build.dir}"/>
   </target>
+
+    <target name="tgz" depends="jar">
+        <tar destfile="${dist.dir}/${project.name}.tar">
+        	<tarfileset file="${basedir}/README" prefix="${project.name}" />
+            <tarfileset file="${basedir}/irccat.sh" filemode="755" prefix="${project.name}" />
+        	<tarfileset file="${dist.dir}/${project.name}.jar" prefix="${project.name}" />
+        	<tarfileset file="${example.dir}/irccat.xml" prefix="${project.name}" />
+        	<tarfileset dir="${lib.dir}" includes="*.jar" prefix="${project.name}/libs" />
+        </tar>
+        <gzip src="${dist.dir}/${project.name}.tar" zipfile="${dist.dir}/${project.name}.tar.gz" />
+        <delete file="${dist.dir}/${project.name}.tar" />
+    </target>
+
+    <target name="dist" depends="jar,tgz">
+    </target>
 
   <target name="clean"
         description="clean up" >
@@ -38,7 +55,7 @@
         <java fork="false" classname="fm.last.irccat.IRCCat">
             <classpath>
                 <path refid="classpath"/>
-                <path location="${dist.dir}/irccat.jar"/>
+                <path location="${dist.dir}/${project.name}.jar"/>
             </classpath>
 			<arg value="${configfile}" />
         </java>
