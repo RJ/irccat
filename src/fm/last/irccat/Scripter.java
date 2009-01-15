@@ -17,10 +17,6 @@
 */
 package fm.last.irccat;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.jibble.pircbot.*;
-import java.net.*;
 import java.io.*; 
 
 // hands off cmd to shell script and returns stdout to the requester
