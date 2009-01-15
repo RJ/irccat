@@ -90,7 +90,6 @@ public class IRCCat extends PircBot {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public IRCCat(XMLConfiguration c) throws Exception {
 		this.config = c;
 		setEncoding("UTF8");
