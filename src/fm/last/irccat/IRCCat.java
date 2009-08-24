@@ -130,11 +130,14 @@ public class IRCCat extends PircBot {
 	}
 
 	protected void onDisconnect(){
-		try{
-			reconnect();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+      while (!isConnected()) {
+         try {
+            reconnect();
+         }
+         catch (Exception e) {
+				Thread.sleep(10000);
+         }
+      }
 	}
 
 	@SuppressWarnings("unchecked")
