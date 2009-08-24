@@ -134,8 +134,12 @@ public class IRCCat extends PircBot {
          try {
             reconnect();
          }
-         catch (Exception e) {
-				Thread.sleep(10000);
+         catch (Exception ex) {
+            try {
+               Thread.sleep(10000);
+            } catch (InterruptedException e) {
+               break;
+            }
          }
       }
 	}
