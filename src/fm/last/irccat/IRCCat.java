@@ -157,6 +157,8 @@ public class IRCCat extends PircBot {
 			if (defaultChannel == null)
 				defaultChannel = "#"+chan.getString("name");
 		}
+        String nickpass = config.getString("server.identify","");
+        if(nickpass != "")  identify(nickpass);
 		
 		System.out.println("Default channel: "+defaultChannel);
 	}

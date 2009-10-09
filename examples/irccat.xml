@@ -6,6 +6,8 @@
 		<address>irc.example.com</address>
 		<port>6667</port>
 		<password/>
+        <!-- to identify with nickserv: -->
+        <!-- <identify>somepass</identify> -->
 	</server>
 	
 	<bot>
