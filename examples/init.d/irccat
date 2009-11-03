@@ -1,0 +1,62 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:		irccat
+# Should-Start:		$local_fs
+# Should-Stop:		$local_fs
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+# Short-Description:	irccat - Simple IRC daemon
+# Description:		irccat - Simple IRC daemon
+### END INIT INFO
+
+NAME=irccat
+DESC=irccat
+USER=irc
+PIDFILE=/var/run/irccat.pid
+ANT=/usr/bin/ant
+CONFIGFILE=/etc/irccat/irccat.xml
+IRCCAT_HOME=/usr/local/src/irccat
+
+case "$1" in
+  start)
+	echo -n "Starting $DESC: "
+	start-stop-daemon --background --user $USER --pidfile=$PIDFILE \
+		--make-pidfile --chuid $USER --startas $ANT \
+		--exec $JAVA_HOME/jre/bin/java --quiet --oknodo \
+		--start -- \
+	       		-Dconfigfile=$CONFIGFILE \
+			-f $IRCCAT_HOME/build.xml run
+	echo "$NAME."
+	;;
+  stop)
+	echo -n "Stopping $DESC: "
+	start-stop-daemon --user $USER --pidfile=$PIDFILE --chuid $USER \
+		--startas $ANT --exec $JAVA_HOME/jre/bin/java --quiet \
+		--oknodo --stop
+	echo "$NAME."
+	rm -f $PIDFILE
+	;;
+
+  restart|force-reload)
+	echo -n "Restarting $DESC: "
+	start-stop-daemon --user $USER --pidfile=$PIDFILE --chuid $USER \
+		--startas $ANT --exec $JAVA_HOME/jre/bin/java --quiet \
+		--oknodo --stop
+	rm -f $PIDFILE
+	sleep 1
+	start-stop-daemon --background --user $USER --pidfile=$PIDFILE \
+		--make-pidfile --chuid $USER --startas $ANT \
+		--exec $JAVA_HOME/jre/bin/java --quiet --oknodo \
+		--start -- \
+	       		-Dconfigfile=$CONFIGFILE \
+			-f $IRCCAT_HOME/build.xml run
+	echo "$NAME."
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
