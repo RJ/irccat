@@ -28,11 +28,13 @@
 
     $originalUrl = "?since_id=4028479400&q=".urlencode($search);
     $baseUrl = "http://search.twitter.com/search";
+    $lang = 'en';
 
     $firstRun = true;
     $refreshUrl = $originalUrl;
 
     while (1) {
+
         $source = file("{$baseUrl}{$refreshUrl}&refresh=true");
         if ($source) {
             $json = json_decode(implode('', $source));
@@ -46,7 +48,7 @@
                 }
 
                 foreach ($json->results as $result) {
-                    if ($message = processMessage($result->text, $filters)) {
+                    if ($message = processMessage($result->text, $filters, $lang)) {
                         print "{$result->from_user}: {$message}\n";
                     }
                 }
@@ -57,11 +59,10 @@
             }
         }
 
-        sleep(60);
+        sleep(30);
     }
 
-    function processMessage ($string, $filters) {
-        $string = utf8_decode($string);
+    function processMessage ($string, $filters, $lang) {
 
         // Resolve shortened URL's to the full thing for filtering
         preg_match_all('/http:\/\/[^ $)]+/i', $string, $urls);
@@ -74,6 +75,11 @@
         }
 
         $string = cleanString($string);
+
+        if ($aTranslation = translateString($string, $lang)) {
+            $string = "{$aTranslation['string']} [Lang: {$aTranslation['detectedLang']}]";
+        }
+
         if ($filters) {
             foreach ($filters as $filter) {
                 if (preg_match("/{$filter}/i", $string)) {
@@ -86,8 +92,34 @@
         return $string;
     }
 
+    function translateString ($string, $lang) {
+
+        $translation = file(
+            "http://ajax.googleapis.com/ajax/services/language/translate?langpair=|{$lang}&v=1.0&q="
+            .urlencode($string)
+        );
+
+        $detectedLang = false;
+        if ($translation) {
+            $json = json_decode(implode('', $translation));
+            $sourceLang = $json->responseData->detectedSourceLanguage;
+            if ($sourceLang != $lang && trim($sourceLang)) {
+                $detectedLang = $sourceLang;
+                $string = cleanString($json->responseData->translatedText);
+            }
+        }
+
+        if ($detectedLang) {
+            return array(
+                'string'        =>  $string,
+                'detectedLang'  =>  $detectedLang,
+            );
+        }
+
+        return false;
+    }
+
     function cleanString ($string) {
-        $string = preg_replace('/\\\u([[:alnum:]]{4})/u', '?', $string);
         $string = str_replace('\/','/', urldecode($string));
         $string = html_entity_decode($string, null, 'UTF-8');
         return htmlspecialchars_decode($string);
@@ -103,5 +135,5 @@
         curl_close($curl);
 
         preg_match('/Location:(.*?)[\r\n]/i', $headers, $redirect);
-        return $redirect ? urlencode(trim($redirect[1])) : '';
+        return $redirect ? urlencode(trim($redirect[1])) : false;
     }
