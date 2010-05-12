@@ -1,6 +1,7 @@
 <?php
 
 /*
+    
     Thanks to Jonty (http://jonty.co.uk/) for this script.
     We use it to see a feed of twitter search results for a given term in IRC.
 
@@ -11,7 +12,13 @@
 
     If you want to filter things from the feed you can optionally add regexes 
     to the end of the params.
+
+    Automatic translation into a language of your choice is supported, simply
+    set $translateTo to the two-letter ISO language code. e.g. 'en', 'fr' or 'de'.
+
 */
+
+    $translateTo = ''; // Set this to a two-letter language code to enable automatic translation
 
     if (count($argv) < 3) {
         print "Usage: twitter-feed.php '#channel' 'searchterm' [url filter regexp, [url-filter regexp, ...]]\n";
@@ -28,7 +35,6 @@
 
     $originalUrl = "?since_id=4028479400&q=".urlencode($search);
     $baseUrl = "http://search.twitter.com/search";
-    $lang = 'en';
 
     $firstRun = true;
     $refreshUrl = $originalUrl;
@@ -48,7 +54,7 @@
                 }
 
                 foreach ($json->results as $result) {
-                    if ($message = processMessage($result->text, $filters, $lang)) {
+                    if ($message = processMessage($result->text, $filters, $translateTo)) {
                         print "{$result->from_user}: {$message}\n";
                     }
                 }
@@ -76,7 +82,7 @@
 
         $string = cleanString($string);
 
-        if ($aTranslation = translateString($string, $lang)) {
+        if ($lang && ($aTranslation = translateString($string, $lang))) {
             $string = "{$aTranslation['string']} [Lang: {$aTranslation['detectedLang']}]";
         }
 
@@ -103,7 +109,7 @@
         if ($translation) {
             $json = json_decode(implode('', $translation));
             $sourceLang = $json->responseData->detectedSourceLanguage;
-            if ($sourceLang != $lang && trim($sourceLang)) {
+            if (strtolower($sourceLang) != strtolower($lang) && trim($sourceLang)) {
                 $detectedLang = $sourceLang;
                 $string = cleanString($json->responseData->translatedText);
             }
