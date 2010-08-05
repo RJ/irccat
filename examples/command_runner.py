@@ -12,7 +12,7 @@ path = '/usr/share/irccat/'
 
 args = sys.argv[1]
 bits = args.split(' ')
-command = bits[3]
+command = bits[3].lower()
 
 found = False
 if re.match('^[a-z0-9]+$', command):
