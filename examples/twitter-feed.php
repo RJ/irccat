@@ -18,7 +18,8 @@
 
 */
 
-    $translateTo = ''; // Set this to a two-letter language code to enable automatic translation
+    $translateTo        = 'en';         // Set this to a two-letter language code to enable automatic translation
+    $translationService = 'google';  // Can be 'google' or 'microsoft'
 
     if (count($argv) < 3) {
         print "Usage: twitter-feed.php '#channel' 'searchterm' [url filter regexp, [url-filter regexp, ...]]\n";
@@ -54,7 +55,7 @@
                 }
 
                 foreach ($json->results as $result) {
-                    if ($message = processMessage($result->text, $filters, $translateTo)) {
+                    if ($message = processMessage($result->text, $filters, $translateTo, $translationService)) {
                         print "{$result->from_user}: {$message}\n";
                     }
                 }
@@ -68,7 +69,7 @@
         sleep(30);
     }
 
-    function processMessage ($string, $filters, $lang) {
+    function processMessage ($string, $filters, $lang, $service) {
 
         // Resolve shortened URL's to the full thing for filtering
         preg_match_all('/http:\/\/[^ $)]+/i', $string, $urls);
@@ -82,13 +83,13 @@
 
         $string = cleanString($string);
 
-        if ($lang && ($aTranslation = translateString($string, $lang))) {
+        if ($lang && ($aTranslation = translateString($string, $lang, $service))) {
             $string = "{$aTranslation['string']} [Lang: {$aTranslation['detectedLang']}]";
         }
 
         if ($filters) {
             foreach ($filters as $filter) {
-                if (preg_match("/{$filter}/i", $string)) {
+                if (preg_match("/{$filter}/iu", $string)) {
                     $string = '';
                     break;
                 }
@@ -98,7 +99,63 @@
         return $string;
     }
 
-    function translateString ($string, $lang) {
+    function translateString ($string, $lang, $service = 'google') {
+
+        if ($service == 'google') {
+            $translation = googleTranslateString($string, $lang);
+
+        } elseif ($service == 'microsoft') {
+            $translation = microsoftTranslateString($string, $lang);
+
+        } else {
+            trigger_error("Unknown translation service '{$service}'\n", E_USER_WARNING);
+            $translation = false;
+        }
+
+        return $translation;
+    }
+
+    function microsoftTranslateString ($string, $lang) {
+
+        $appId = '4BEC23A5017EAAA3ECC828FA6148514879BCD944';
+
+        $sourceLang = file(
+            "http://api.microsofttranslator.com/V2/Http.svc/Detect?appId={$appId}&text="
+            .urlencode($string)
+        );
+
+        $detectedLang = false;
+        if ($sourceLang) {
+            $sourceLang = strip_tags(implode('', $sourceLang));
+
+            if (strtolower($sourceLang) != strtolower($lang) && trim($sourceLang)) {
+
+                $string = file(
+                    "http://api.microsofttranslator.com/V2/Ajax.svc/Translate?appId={$appId}&to={$lang}&text="
+                    .urlencode($string)
+                );
+
+                if ($string) {
+                    $string = strip_tags(implode('', $string));
+
+                    $detectedLang = $sourceLang;
+                    $string = cleanString($string);
+                }
+            }
+
+        }
+
+        if ($detectedLang) {
+            return array(
+                'string'        =>  $string,
+                'detectedLang'  =>  $detectedLang,
+            );
+        }
+
+        return false;
+    }
+
+    function googleTranslateString ($string, $lang) {
 
         $translation = file(
             "http://ajax.googleapis.com/ajax/services/language/translate?langpair=|{$lang}&v=1.0&q="
