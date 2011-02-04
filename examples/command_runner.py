@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import os, sys, re, subprocess
+import os, sys, re, subprocess, difflib
 
 # If this script is set as your command handler, when any ?command is run in IRC it will
 # look in the path defined below for a script matching that command name and run it.
@@ -15,8 +15,15 @@ bits = args.split(' ')
 command = bits[3].lower()
 
 found = False
+commands = []
+
 if re.match('^[a-z0-9]+$', command):
     for file in os.listdir(path):
+
+        # Build the index, in case we never find a command
+        m = re.match('^[a-z0-9]+', file)
+        if m:
+            commands.append(m.group(0))
 
         if re.match('^%s\.[a-z]+$' % command, file):
             found = True
@@ -27,12 +34,25 @@ if re.match('^[a-z0-9]+$', command):
             stdout = proc.stdout
 
             while True:
+
                 # We do this to avoid buffering from the subprocess stdout
-                print os.read(stdout.fileno(), 65536),
+                data = os.read(stdout.fileno(), 65536)
+
+                # Kill useless lines in the output
+                for line in re.split("[\r\n]+", data):
+                    line = line.strip()
+                    if line:
+                        print line
+
                 sys.stdout.flush()
 
                 if proc.poll() != None:
                     break
 
+
 if found == False:
-    print "Unknown command '%s'" % command
+
+    # Didn't find a command to run. Maybe can we help.
+    matches = difflib.get_close_matches(command, commands, 1)
+    if matches:
+        print "%s, I don't understand '%s'. Did you mean '%s'?" % (bits[0], command, matches[0])
