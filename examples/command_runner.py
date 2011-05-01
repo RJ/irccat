@@ -21,9 +21,9 @@ if re.match('^[a-z0-9]+$', command):
     for file in os.listdir(path):
 
         # Build the index, in case we never find a command
-        m = re.match('^[a-z0-9]+', file)
+        m = re.match('^([a-z0-9]+)\.[a-z]+$', file)
         if m:
-            commands.append(m.group(0))
+            commands.append(m.group(1))
 
         if re.match('^%s\.[a-z]+$' % command, file):
             found = True
