@@ -181,9 +181,38 @@ public class IRCCat extends PircBot {
 		handleMessage(null, sender, message);
 	}
 
-	public void sendMsg(String t, String m) {
-		super.sendMessage(t, m);
-	}
+    public void sendMsg(String t, String m) {
+            m = mIRCify(m);
+            super.sendMessage(t, m);
+    }
+
+    public String mIRCify(String m) {
+            Map<String, String> colorReplacementMap = new HashMap<String, String>();
+            colorReplacementMap.put("#NORMAL", Colors.NORMAL);
+            colorReplacementMap.put("#BOLD", Colors.BOLD);
+            colorReplacementMap.put("#UNDERLINE", Colors.UNDERLINE);
+            colorReplacementMap.put("#REVERSE", Colors.REVERSE);
+            colorReplacementMap.put("#WHITE", Colors.WHITE);
+            colorReplacementMap.put("#BLACK", Colors.BLACK);
+            colorReplacementMap.put("#DBLUE", Colors.DARK_BLUE);
+            colorReplacementMap.put("#DGREEN", Colors.DARK_GREEN);
+            colorReplacementMap.put("#RED", Colors.RED);
+            colorReplacementMap.put("#BROWN", Colors.BROWN);
+            colorReplacementMap.put("#PURPLE", Colors.PURPLE);
+            colorReplacementMap.put("#ORANGE", Colors.OLIVE);
+            colorReplacementMap.put("#YELLOW", Colors.YELLOW);
+            colorReplacementMap.put("#GREEN", Colors.GREEN);
+            colorReplacementMap.put("#TEAL", Colors.TEAL);
+            colorReplacementMap.put("#CYAN", Colors.CYAN);
+            colorReplacementMap.put("#BLUE", Colors.BLUE);
+            colorReplacementMap.put("#PINK", Colors.MAGENTA);
+            colorReplacementMap.put("#DGRAY", Colors.DARK_GRAY);
+            colorReplacementMap.put("#GRAY", Colors.LIGHT_GRAY);
+
+            for(Map.Entry<String, String> e : colorReplacementMap.entrySet())
+                    m = m.replaceAll(e.getKey(), e.getValue());
+            return m;
+    }
 
 	// message sent to our channel
 	public void onMessage(String channel_, String sender, String login,
