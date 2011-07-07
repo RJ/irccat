@@ -22,6 +22,8 @@ import org.jibble.pircbot.*;
 import java.net.*;
 import java.io.*;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class IRCCat extends PircBot {
 
