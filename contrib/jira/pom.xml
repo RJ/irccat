@@ -1,36 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>fm.last.jira.plugins</groupId>
+    <artifactId>jira-plugin-irccat</artifactId>
+    <version>1.0</version>
+
+    <organization>
+        <name>LastFM</name>
+        <url>http://www.last.fm</url>
+    </organization>
+
+    <name>JIRA Irccat Plugin</name>
+    <description>JIRA listener plugin for IRCCat.</description>
+    <packaging>atlassian-plugin</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-api</artifactId>
+            <version>${jira.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-jira-plugin</artifactId>
+                <version>3.8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <productVersion>${jira.version}</productVersion>
+                    <productDataVersion>${jira.version}</productDataVersion>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <parent>
         <groupId>com.atlassian.jira.plugins</groupId>
         <artifactId>jira-plugin-base</artifactId>
         <version>8</version>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>fm.last.jira.plugins</groupId>
-    <artifactId>jira-plugin-irccat</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
-    <name>JIRA Irccat Plugin</name>
-    <packaging>atlassian-plugin</packaging>
-
     <properties>
+        <jira.version>5.0</jira.version>
+        <amps.version>3.8</amps.version>
         <atlassian.plugin.key>fm.last.jira.plugins.jira-plugin-irccat</atlassian.plugin.key>
         <atlassian.product.version>3.13</atlassian.product.version>
         <atlassian.product.test-lib.version>3.13</atlassian.product.test-lib.version>
         <atlassian.product.data.version>3.13</atlassian.product.data.version>
     </properties>
 
-    <description>JIRA listener plugin for IRCCat.</description>
-	<url>http://www.last.fm</url>
 
-	<developers>
-		<developer>
-			<name>Russ Garrett</name>
-			<organization>Last.fm Ltd.</organization>
-		</developer>
-	</developers>
+    <developers>
+        <developer>
+            <name>Russ Garrett</name>
+            <organization>Last.fm Ltd.</organization>
+        </developer>
+    </developers>
+
 </project>
+

@@ -74,7 +74,7 @@ public class IrccatListener extends AbstractIssueEventListener implements IssueE
 		sb.append(" ");
 		sb.append(ComponentManager.getInstance().getEventTypeManager().getEventType(event.getEventTypeId()).getName().toLowerCase());
 		sb.append(" by ");
-		sb.append(event.getRemoteUser().getName());
+		sb.append(event.getUser().getName());
 		if (event.getComment() != null && event.getComment().getBody().length() > 0) {
 			sb.append(" \"");
 			sb.append(StringUtils.abbreviate(event.getComment().getBody(), 100));
