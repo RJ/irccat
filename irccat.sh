@@ -2,8 +2,9 @@
 #
 # Run irccat.
 #
-
-cp="irccat.jar"
+set -e
+cd `dirname $0`
+cp="dist/irccat.jar"
 for jar in libs/*.jar
 do
     cp="$cp:$jar"
