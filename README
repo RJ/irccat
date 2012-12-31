@@ -1,6 +1,5 @@
 IRCcat
 ======
-
 As in `cat` to IRC. 
 
 IRCcat does 2 things:
@@ -15,8 +14,29 @@ IRCcat does 2 things:
    (easily extend irccat functionality with your own scripts)
 
 
-Installation
-------------
+Quick Ubuntu/Debian Installation
+--------------------------------
+$ sudo su -
+# apt-get install netcat openjdk-6-jdk ant
+# cd /usr/local/
+# git clone https://github.com/Wirehive/irccat.git
+# cd irccat/
+# ant dist
+# mkdir -p /etc/irccat
+# cp ./examples/irccat.xml /etc/irccat/
+# cp ./examples/init.d/irccat /etc/init.d/
+# update-rc.d irccat defaults
+
+Now edit /etc/irccat/irccat.xml for your channel details.
+
+# /etc/init.d/irccat start.
+# telnet localhost 12345
+
+Now bash out some stuff and watch your IRC channel :)
+
+
+Detailed Installation
+---------------------
 Edit the irccat.xml so it knows which irc server, channel etc..
 Check you have sun jvm >=1.5 (java -version)
 
@@ -88,7 +108,6 @@ Built-in commands are prefixed with a !
 
 Trust
 -----
-
 Any command (?.. !..) uttered in a channel with irccat in is executed and 
 implicitly trusted. 
 
@@ -110,34 +129,43 @@ echo "SVN commit by $AUTHOR (r$REV) '$LOG' http://web-svn-interface.example.com/
 
 Nagios alerts to irc
 --------------------
-Buried in our nagios config is this, from misccommands.cfg:
+Check out our nagios IRC notification script from here:
+https://github.com/Wirehive/nagiosplugins
 
-define command {
-    command_name    host-notify-by-irc
-    command_line    /bin/echo "#sys Nagios: Host '$HOSTALIAS$' is $HOSTSTATE$ - Info: $OUTPUT$" | /bin/netcat -q 1 irccathost 12345
-}
+Using Colours
+-------------
+There are shorthand codes for making use of color "MIRC Style". They are used
+with a "%" immediately followed by the shorthand code. You then reset using the
+shorthand code NORMAL.
 
-define command {
-    command_name    service-notify-by-irc
-    command_line    /bin/echo "#sys Nagios: Service $SERVICEDESC$ on '$HOSTALIAS$' is $SERVICESTATE$ - Info: $OUTPUT$" | /bin/netcat -q 1 irccathost 12345
-}
+For example:
+Hello %REDthis%NORMAL was in red and %UNDERLINEthis%NORMAL was underlined.
 
-And in contacts.cfg:
-
-define contact{
-        contact_name                    irccat
-        alias                   irccat
-        service_notification_period     24x7
-        host_notification_period        24x7
-        service_notification_options    w,c,r
-        host_notification_options       d,r
-        service_notification_commands service-notify-by-irc
-        host_notification_commands  host-notify-by-irc
-        email   blah@blah
-}
+Available shorthand codes are:
+NORMAL
+BOLD
+UNDERLINE
+REVERSE
+WHITE
+BLACK
+DBLUE (Dark Blue)
+DGREEN (Dark Green)
+RED
+BROWN
+PURPLE
+ORANGE (Olive)
+YELLOW
+GREEN
+TEAL
+CYAN
+BLUE
+PINK (Magenta)
+DGRAY (Dark Gray)
+GRAY (Light Gray)
 
 Feedback
 --------
+This fork of irccat is derived from the work of RJ. Contact details below:
 Email:  rj@metabrew.com
 Web:    http://www.last.fm/user/RJ (work, and the reason irccat exists)
 Web:    http://www.metabrew.com/   (blog)
