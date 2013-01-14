@@ -14,7 +14,7 @@ DESC=irccat
 USER=root
 PIDFILE=/var/run/irccat.pid
 ANT=/usr/bin/ant
-CONFIGFILE=/etc/irccat/wirehive.xml
+CONFIGFILE=/etc/irccat/irccat.xml
 IRCCAT_HOME=/usr/local/irccat
 
 case "$1" in
