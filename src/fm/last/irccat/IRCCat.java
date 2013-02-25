@@ -78,8 +78,8 @@ public class IRCCat extends PircBot {
 			while (true) {
 				try {
 					Socket clientSocket = serverSocket.accept();
-					// System.out.println("Connection on catport from: "
-					// + clientSocket.getInetAddress().toString());
+					 System.out.println("Connection on catport from: "
+					 + clientSocket.getInetAddress().toString());
 					CatHandler handler = new CatHandler(clientSocket, bot);
 					handler.start();
 				} catch (Exception e) {
@@ -102,7 +102,6 @@ public class IRCCat extends PircBot {
 		List<HierarchicalConfiguration> chans = config
 				.configurationsAt("channels.channel");
 		for (HierarchicalConfiguration chan : chans) {
-            System.out.println("Channel " + chan + " has a max response limit of " + chan.getInteger("maxresponselines", null));
             maxCmdResponseLines.put("#" + chan.getString("name"), chan.getInteger("maxresponselines", null));
         }
 		setName(nick);
@@ -138,7 +137,6 @@ public class IRCCat extends PircBot {
     }
 
 	public int getCmdMaxResponseLines(String chan) {
-        System.out.println("Checking max response lines of channel " + chan);
         if (chan != null) {
             if (maxCmdResponseLines.containsKey(chan)) {
                 return maxCmdResponseLines.get(chan);
