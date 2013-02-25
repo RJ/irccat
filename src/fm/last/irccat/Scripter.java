@@ -40,10 +40,11 @@ class Scripter extends Thread {
                 InputStreamReader isr = new InputStreamReader(is, "UTF-8");
                 BufferedReader br = new BufferedReader(isr);
                 String line;
+                System.out.println(channel + " has a max response of " + bot.getCmdMaxResponseLines(channel));
                 int i=0;
                 while ((line = br.readLine()) != null) {
                     bot.sendMsg(returnName, line);
-                    if(++i==bot.getCmdMaxResponseLines()){
+                    if(++i==bot.getCmdMaxResponseLines(channel)){
                         bot.sendMsg(returnName, "<truncated, too many lines>");
                         break;
                     }

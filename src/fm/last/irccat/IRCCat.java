@@ -30,7 +30,8 @@ public class IRCCat extends PircBot {
 	private String nick;
 	private String cmdScript;
 	private String defaultChannel = null;
-	private int maxCmdResponseLines = 26;
+    private HashMap<String, Integer> maxCmdResponseLines = new HashMap();
+	//private int maxCmdResponseLines = 26;
 	private XMLConfiguration config;
 
 	public static void main(String[] args) throws Exception {
@@ -96,8 +97,14 @@ public class IRCCat extends PircBot {
 		this.config = c;
 		setEncoding("UTF8");
 		cmdScript = config.getString("script.cmdhandler");
-		maxCmdResponseLines = config.getInt("script.maxresponselines", 26);
-		nick = config.getString("bot.nick");
+		maxCmdResponseLines.put("default", config.getInteger("script.defaultmaxresponselines", 26));
+        nick = config.getString("bot.nick");
+		List<HierarchicalConfiguration> chans = config
+				.configurationsAt("channels.channel");
+		for (HierarchicalConfiguration chan : chans) {
+            System.out.println("Channel " + chan + " has a max response limit of " + chan.getInteger("maxresponselines", null));
+            maxCmdResponseLines.put("#" + chan.getString("name"), chan.getInteger("maxresponselines", null));
+        }
 		setName(nick);
 		setLogin(nick);
 		setMessageDelay(config.getLong("bot.messagedelay", 1000));
@@ -126,8 +133,18 @@ public class IRCCat extends PircBot {
 		return cmdScript;
 	}
 
-	public int getCmdMaxResponseLines() {
-		return maxCmdResponseLines;
+    public int getCmdMaxResponseLines() {
+        return maxCmdResponseLines.get("default");
+    }
+
+	public int getCmdMaxResponseLines(String chan) {
+        System.out.println("Checking max response lines of channel " + chan);
+        if (chan != null) {
+            if (maxCmdResponseLines.containsKey(chan)) {
+                return maxCmdResponseLines.get(chan);
+            }
+        }
+		return maxCmdResponseLines.get("default");
 	}
 
 	protected void onDisconnect(){
