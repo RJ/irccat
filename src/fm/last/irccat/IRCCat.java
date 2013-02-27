@@ -78,8 +78,8 @@ public class IRCCat extends PircBot {
 			while (true) {
 				try {
 					Socket clientSocket = serverSocket.accept();
-					 System.out.println("Connection on catport from: "
-					 + clientSocket.getInetAddress().toString());
+					 //System.out.println("Connection on catport from: "
+					 //+ clientSocket.getInetAddress().toString());
 					CatHandler handler = new CatHandler(clientSocket, bot);
 					handler.start();
 				} catch (Exception e) {
