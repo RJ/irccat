@@ -132,11 +132,11 @@ public class IRCCat extends PircBot {
 		return cmdScript;
 	}
 
-    public int getCmdMaxResponseLines() {
+    public int getMaxCmdResponseLines() {
         return maxCmdResponseLines.get("default");
     }
 
-	public int getCmdMaxResponseLines(String chan) {
+	public int getMaxCmdResponseLines(String chan) {
         if (chan != null) {
             if (maxCmdResponseLines.containsKey(chan)) {
                 return maxCmdResponseLines.get(chan);
