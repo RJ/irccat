@@ -31,7 +31,6 @@ public class IRCCat extends PircBot {
 	private String cmdScript;
 	private String defaultChannel = null;
     private HashMap<String, Integer> maxCmdResponseLines = new HashMap();
-	//private int maxCmdResponseLines = 26;
 	private XMLConfiguration config;
 
 	public static void main(String[] args) throws Exception {
@@ -102,7 +101,7 @@ public class IRCCat extends PircBot {
 		List<HierarchicalConfiguration> chans = config
 				.configurationsAt("channels.channel");
 		for (HierarchicalConfiguration chan : chans) {
-            maxCmdResponseLines.put("#" + chan.getString("name"), chan.getInteger("maxresponselines", null));
+            maxCmdResponseLines.put("#" + chan.getString("name"), chan.getInteger("maxresponselines", maxCmdResponseLines.get("default")));
         }
 		setName(nick);
 		setLogin(nick);
