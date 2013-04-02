@@ -77,18 +77,18 @@ class CatHandler  extends Thread {
                     
                 	// now send it to the recipients:
                 	if(all) {
-                        if(topic) {
-                            bot.catTopicToAll(inputLine);
-                        }else {
-                		    bot.catStuffToAll(inputLine);
-                        }
+                    if(topic) {
+                      bot.catTopicToAll(inputLine);
                     }else {
-                        if(topic) {
-                	if(all)
-                		bot.catStuffToAll(inputLine);
-                	else
-                		bot.catStuff(inputLine, recipients);
-
+                		  bot.catStuffToAll(inputLine);
+                    }
+                  }else {
+                    if(topic) {
+                      bot.catTopic(inputLine, recipients);
+                    }else {
+                      bot.catStuff(inputLine, recipients);
+                    }
+                  }
                 }
                 in.close();
                 //System.out.println("Handler finished.");
