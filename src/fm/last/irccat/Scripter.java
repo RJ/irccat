@@ -43,7 +43,7 @@ class Scripter extends Thread {
                 int i=0;
                 while ((line = br.readLine()) != null) {
                     bot.sendMsg(returnName, line);
-                    if(++i==bot.getCmdMaxResponseLines()){
+                    if(++i==bot.getMaxCmdResponseLines(channel)){
                         bot.sendMsg(returnName, "<truncated, too many lines>");
                         break;
                     }
