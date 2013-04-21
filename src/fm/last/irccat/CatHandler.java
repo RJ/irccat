@@ -39,11 +39,19 @@ class CatHandler  extends Thread {
                 String inputLine = new String();
                 String recipients[] = null; 
                 boolean all = false;
+                boolean topic = false;
                 int i = 0;
                 while ((inputLine = in.readLine()) != null) {
                 	if(i++==0){
                 		String[] words = inputLine.split(" ");
-                		if(words[0].equals("#*")){
+                		if(words[0].equals("%TOPIC")) {
+                            topic = true;
+                            inputLine = inputLine.substring(7);
+                            String[] newwords = new String[words.length-1];
+                            System.arraycopy(words, 1, newwords, 0, newwords.length);
+                            words = newwords;
+                        }
+                        if(words[0].equals("#*")){
                 			// send to all channels
                 			all = true;
                 			inputLine = inputLine.substring(3);
@@ -68,11 +76,19 @@ class CatHandler  extends Thread {
                 	}
                     
                 	// now send it to the recipients:
-                	if(all)
-                		bot.catStuffToAll(inputLine);
-                	else
-                		bot.catStuff(inputLine, recipients);
-
+                	if(all) {
+                    if(topic) {
+                      bot.catTopicToAll(inputLine);
+                    }else {
+                		  bot.catStuffToAll(inputLine);
+                    }
+                  }else {
+                    if(topic) {
+                      bot.catTopic(inputLine, recipients);
+                    }else {
+                      bot.catStuff(inputLine, recipients);
+                    }
+                  }
                 }
                 in.close();
                 //System.out.println("Handler finished.");

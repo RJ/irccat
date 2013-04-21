@@ -94,6 +94,31 @@ Examples:
 	  this sends to all channels the bot is in	
 
 
+Changing topics in channels
+---------------------------
+To change the topic in a channel (rather than sending a message), use
+the prefix %TOPIC.
+
+$ echo "%TOPIC #mychannel hello world" | netcat -q0 machinename 12345
+
+This changes the topic of #mychannel to "hello world" (assuming the bot
+has permission to set the topic)
+
+Second word defines the recipient channels. You can use a comma separated
+list. Nick recipients will be accepted, but silently ignored.
+
+Examples:
+
+  - "%TOPIC #chan new topic"
+    just changes the topic of #chan
+
+  - "%TOPIC #channel1,#channel2 this channel is great"
+    this changes the topics of two channels
+
+  - "%TOPIC #* Important Topic"
+    this changes the topics in all channels the bot is in
+
+
 Built-in commands
 -----------------
 There are a handful of built-in commands for instructing the bot at runtime.
