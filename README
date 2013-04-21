@@ -154,8 +154,9 @@ echo "SVN commit by $AUTHOR (r$REV) '$LOG' http://web-svn-interface.example.com/
 
 Nagios alerts to irc
 --------------------
-Check out our nagios IRC notification script from here:
-https://github.com/Wirehive/nagiosplugins
+Check out the Nagios IRC notification script from here:
+https://github.com/Wirehive/nagiosplugins/blob/master/notifications/send_irc
+
 
 Using Colours
 -------------
@@ -187,6 +188,7 @@ BLUE
 PINK (Magenta)
 DGRAY (Dark Gray)
 GRAY (Light Gray)
+
 
 Feedback
 --------
