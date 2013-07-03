@@ -72,6 +72,11 @@ Examples:
 	
 	- "#* Attention, something important"
 	  this sends to all channels the bot is in	
+	
+	- "#chan %REDroses are red%NORMAL, grass is #GREENgreen#NORMAL"
+	  you can use colors too, see IRCCat.java for the full list;
+	  Either "#" or "%" will work.
+
 
 
 Changing topics in channels
