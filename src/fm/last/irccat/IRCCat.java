@@ -21,17 +21,26 @@ import org.apache.commons.configuration.*;
 import org.jibble.pircbot.*;
 import java.net.*;
 import java.io.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
 public class IRCCat extends PircBot {
 
+  // we could use this for situations where an ordered sequence of tasks should
+  // be run on a single worker thread in serial order of task submission.
+  //static final ExecutorService threadPoolManager = Executors.newSingleThreadedExecutor();
+  // a thread pool manager to handle our thread lifecycles
+  static final ExecutorService threadPoolManager = Executors.newCachedThreadPool();
+
 	private String nick;
 	private String cmdScript;
 	private String defaultChannel = null;
 	private int maxCmdResponseLines = 26;
 	private XMLConfiguration config;
+
 
 	public static void main(String[] args) throws Exception {
 		try {
@@ -79,8 +88,7 @@ public class IRCCat extends PircBot {
 					Socket clientSocket = serverSocket.accept();
 					// System.out.println("Connection on catport from: "
 					// + clientSocket.getInetAddress().toString());
-					CatHandler handler = new CatHandler(clientSocket, bot);
-					handler.start();
+				  threadPoolManager.submit( new CatHandler(clientSocket, bot) );
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -88,7 +96,11 @@ public class IRCCat extends PircBot {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		} finally {
+      if (null != threadPoolManager) {
+        threadPoolManager.shutdown();
+      }
+    }
 
 	}
 
@@ -103,7 +115,6 @@ public class IRCCat extends PircBot {
 		setMessageDelay(config.getLong("bot.messagedelay", 1000));
 		setFinger(config.getString("bot.finger",
 				"IRCCat - a development support bot, used by Last.fm"));
-
 
 		try {
 			// connect to server
@@ -310,9 +321,8 @@ public class IRCCat extends PircBot {
 		
 		// now "cmd" contains the message, minus the address prefix (eg: ?)
 		// hand off msg to thread that executes shell script
-        System.out.println("Scripter: ["+respondTo+"] <"+sender+"> "+message);
-		Thread t = new Scripter(sender, channel_, respondTo, cmd, this);
-		t.run();
+    System.out.println("Scripter: ["+respondTo+"] <"+sender+"> "+message);
+    threadPoolManager.submit( new Scripter(sender, channel_, respondTo, cmd, this) );
 	}
 
 	/*
