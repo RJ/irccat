@@ -25,7 +25,7 @@
 	<!-- Settings for calling external scripts to handle commands -->
 	<script>
 		<cmdhandler>scripts/cmd_handler.sh</cmdhandler>
-		<maxresponselines>15</maxresponselines>
+		<defaultmaxresponselines>15</defaultmaxresponselines>
 	</script>
 	
 	<!-- Which channels to join on startup -->
@@ -34,6 +34,7 @@
 		<channel>
 			<name>testchan1</name>
 			<password>blah</password>
+            <maxresponselines>5</maxresponselines>
 		</channel>
 		<channel>
 			<name>testchan2</name>

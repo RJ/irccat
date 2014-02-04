@@ -30,7 +30,7 @@ public class IRCCat extends PircBot {
 	private String nick;
 	private String cmdScript;
 	private String defaultChannel = null;
-	private int maxCmdResponseLines = 26;
+    private HashMap<String, Integer> maxCmdResponseLines = new HashMap();
 	private XMLConfiguration config;
 
 	public static void main(String[] args) throws Exception {
@@ -77,8 +77,8 @@ public class IRCCat extends PircBot {
 			while (true) {
 				try {
 					Socket clientSocket = serverSocket.accept();
-					// System.out.println("Connection on catport from: "
-					// + clientSocket.getInetAddress().toString());
+					 //System.out.println("Connection on catport from: "
+					 //+ clientSocket.getInetAddress().toString());
 					CatHandler handler = new CatHandler(clientSocket, bot);
 					handler.start();
 				} catch (Exception e) {
@@ -96,8 +96,13 @@ public class IRCCat extends PircBot {
 		this.config = c;
 		setEncoding("UTF8");
 		cmdScript = config.getString("script.cmdhandler");
-		maxCmdResponseLines = config.getInt("script.maxresponselines", 26);
-		nick = config.getString("bot.nick");
+		maxCmdResponseLines.put("default", config.getInteger("script.defaultmaxresponselines", 26));
+        nick = config.getString("bot.nick");
+		List<HierarchicalConfiguration> chans = config
+				.configurationsAt("channels.channel");
+		for (HierarchicalConfiguration chan : chans) {
+            maxCmdResponseLines.put("#" + chan.getString("name"), chan.getInteger("maxresponselines", maxCmdResponseLines.get("default")));
+        }
 		setName(nick);
 		setLogin(nick);
 		setMessageDelay(config.getLong("bot.messagedelay", 1000));
@@ -126,8 +131,17 @@ public class IRCCat extends PircBot {
 		return cmdScript;
 	}
 
-	public int getCmdMaxResponseLines() {
-		return maxCmdResponseLines;
+    public int getMaxCmdResponseLines() {
+        return maxCmdResponseLines.get("default");
+    }
+
+	public int getMaxCmdResponseLines(String chan) {
+        if (chan != null) {
+            if (maxCmdResponseLines.containsKey(chan)) {
+                return maxCmdResponseLines.get(chan);
+            }
+        }
+		return maxCmdResponseLines.get("default");
 	}
 
 	protected void onDisconnect(){
