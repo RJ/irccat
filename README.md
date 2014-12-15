@@ -1,3 +1,8 @@
+## Seeking Maintainer
+
+Want commit access? If you are using irccat and want to help reviewing the occasional pull request/issues, please message me for commit access. I don't do any java dev atm, so testing changes is a bit painful for me.
+
+
 IRCcat
 ======
 
