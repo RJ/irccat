@@ -17,6 +17,7 @@ command = bits[3].lower()
 found = False
 commands = []
 
+os.chdir("/opt/irccat/irccat-data")
 
 if re.match('^[a-z0-9]+$', command):
     for path in paths:
