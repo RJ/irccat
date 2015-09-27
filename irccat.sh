@@ -10,4 +10,8 @@ do
     cp="$cp:$jar"
 done
 
-exec java -cp "build/:$cp" fm.last.irccat.IRCCat "${1:-irccat.xml}"
+while true
+do
+    java -cp "build/:$cp" fm.last.irccat.IRCCat "${1:-irccat.xml}"
+    sleep 10
+done
