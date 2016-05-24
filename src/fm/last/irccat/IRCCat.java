@@ -100,6 +100,7 @@ public class IRCCat extends PircBot {
 		nick = config.getString("bot.nick");
 		setName(nick);
 		setLogin(nick);
+		setVersion(config.getString("bot.version", getVersion()));
 		setMessageDelay(config.getLong("bot.messagedelay", 1000));
 		setFinger(config.getString("bot.finger",
 				"IRCCat - a development support bot, used by Last.fm"));
