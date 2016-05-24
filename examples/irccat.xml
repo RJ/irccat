@@ -14,6 +14,7 @@
 		<nick>irccat</nick>
 		<!-- The number of milliseconds between each outgoing message in the bot's queue -->
 		<messagedelay>250</messagedelay>
+		<version>irccat</version>
 	</bot>
 	
 	<!-- Address/port to listen on for data to cat to IRC -->
