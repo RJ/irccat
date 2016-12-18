@@ -3,3 +3,4 @@ irccat.xml
 # Ant...
 build
 dist
+*~

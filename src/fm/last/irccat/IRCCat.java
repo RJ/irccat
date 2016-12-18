@@ -116,8 +116,15 @@ public class IRCCat extends PircBot {
 						"server.password", ""));
 				if(tries>1) Thread.sleep(10000);
 			}
+                } catch (UnknownHostException uhe) {
+		        // we get stuck here on java.net.UnknownHostException
+		        // so just exit and let supervisor restart us
+			System.err.println(uhe.toString());
+			System.err.println(uhe.getMessage());
+		        System.exit(-1);
 		} catch (Exception e) {
-			System.out.println(e.toString());
+			System.err.println(e.toString());
+			System.err.println(e.getMessage());
 		}
 
 	}
