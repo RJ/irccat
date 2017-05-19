@@ -181,7 +181,7 @@ public class IRCCat extends PircBot {
 	// PM was sent to us on irc
 	public void onPrivateMessage(String sender, String login, String hostname,
 			String message) {
-		handleMessage(null, sender, message);
+		handleMessage(null, sender, login, message);
 	}
 
     public void changeTopic(String target, String topic) {
@@ -228,7 +228,7 @@ public class IRCCat extends PircBot {
 	// message sent to our channel
 	public void onMessage(String channel_, String sender, String login,
 			String hostname, String message) {
-		handleMessage(channel_, sender, message);
+		handleMessage(channel_, sender, login, message);
 	}
 
 	public void onPart(String _channel, String _sender, String _login,
@@ -265,7 +265,7 @@ public class IRCCat extends PircBot {
 		return false;
 	}
 	
-	public void handleMessage(String channel_, String sender, String message) {
+	public void handleMessage(String channel_, String sender, String login, String message) {
 		String cmd;
 		String respondTo = channel_ == null ? sender : channel_;
 		
@@ -312,7 +312,7 @@ public class IRCCat extends PircBot {
 		// now "cmd" contains the message, minus the address prefix (eg: ?)
 		// hand off msg to thread that executes shell script
         System.out.println("Scripter: ["+respondTo+"] <"+sender+"> "+message);
-		Thread t = new Scripter(sender, channel_, respondTo, cmd, this);
+		Thread t = new Scripter(sender, channel_, respondTo, cmd, login, this);
 		t.run();
 	}
 

@@ -22,20 +22,21 @@ import java.io.*;
 // hands off cmd to shell script and returns stdout to the requester
 class Scripter extends Thread {
         IRCCat bot;
-        String nick, channel, returnName, cmd;
+        String nick, channel, returnName, cmd, login;
 
-        Scripter(String nk, String ch, String r, String c, IRCCat b){
+        Scripter(String nk, String ch, String r, String c, String l, IRCCat b){
             nick = nk;
             channel = ch;
             cmd = c;
             returnName = r;
             bot = b;
+            login = l;
         }
 
         public void run(){
             try{
                 Runtime runtime = Runtime.getRuntime();
-                Process process = runtime.exec(new String[]{bot.getCmdScript() ,nick + " " + channel + " " + returnName+" "+cmd});
+                Process process = runtime.exec(new String[]{bot.getCmdScript() ,nick + " " + channel + " " + returnName + " " + login + " " + cmd});
                 InputStream is = process.getInputStream();
                 InputStreamReader isr = new InputStreamReader(is, "UTF-8");
                 BufferedReader br = new BufferedReader(isr);

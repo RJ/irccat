@@ -7,6 +7,7 @@ $toks = explode(" ",$input);
 $nick = array_shift($toks);
 $channel = array_shift($toks);
 $sender = array_shift($toks);
+$login = array_shift($toks);
 $first = array_shift($toks);
 
 // switch on first word (the command word)
