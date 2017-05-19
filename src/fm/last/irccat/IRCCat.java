@@ -335,6 +335,18 @@ public class IRCCat extends PircBot {
 			return "Joining: " + toks[1];
 		}
 
+		// GIVE SOMEONE AN OP
+		if (method.equals("op") && toks.length == 3){
+			op(toks[1], toks[2]);
+			return "Giving " + toks[2] + " op";
+		}
+
+		// DEOP SOMEONE
+		if (method.equals("deop") && toks.length == 3){
+			deOp(toks[1], toks[2]);
+			return "Taking op from " + toks[2];
+		}
+
 		// PART A CHANNEL
 		if (method.equals("part") && toks.length == 2) {
 			sendMessage(toks[1], "<" + sender + "> !" + cmd);
