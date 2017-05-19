@@ -30,8 +30,9 @@ public class IRCCat extends PircBot {
 	private String nick;
 	private String cmdScript;
 	private String defaultChannel = null;
-	private int maxCmdResponseLines = 26;
+    private HashMap<String, Integer> maxCmdResponseLines = new HashMap();
 	private XMLConfiguration config;
+    private bool mute = false;
 
 	public static void main(String[] args) throws Exception {
 		try {
@@ -77,8 +78,8 @@ public class IRCCat extends PircBot {
 			while (true) {
 				try {
 					Socket clientSocket = serverSocket.accept();
-					// System.out.println("Connection on catport from: "
-					// + clientSocket.getInetAddress().toString());
+					 //System.out.println("Connection on catport from: "
+					 //+ clientSocket.getInetAddress().toString());
 					CatHandler handler = new CatHandler(clientSocket, bot);
 					handler.start();
 				} catch (Exception e) {
@@ -96,8 +97,13 @@ public class IRCCat extends PircBot {
 		this.config = c;
 		setEncoding("UTF8");
 		cmdScript = config.getString("script.cmdhandler");
-		maxCmdResponseLines = config.getInt("script.maxresponselines", 26);
-		nick = config.getString("bot.nick");
+		maxCmdResponseLines.put("default", config.getInteger("script.defaultmaxresponselines", 26));
+        nick = config.getString("bot.nick");
+		List<HierarchicalConfiguration> chans = config
+				.configurationsAt("channels.channel");
+		for (HierarchicalConfiguration chan : chans) {
+            maxCmdResponseLines.put("#" + chan.getString("name"), chan.getInteger("maxresponselines", maxCmdResponseLines.get("default")));
+        }
 		setName(nick);
 		setLogin(nick);
 		setVersion(config.getString("bot.version", getVersion()));
@@ -127,8 +133,17 @@ public class IRCCat extends PircBot {
 		return cmdScript;
 	}
 
-	public int getCmdMaxResponseLines() {
-		return maxCmdResponseLines;
+    public int getMaxCmdResponseLines() {
+        return maxCmdResponseLines.get("default");
+    }
+
+	public int getMaxCmdResponseLines(String chan) {
+        if (chan != null) {
+            if (maxCmdResponseLines.containsKey(chan)) {
+                return maxCmdResponseLines.get(chan);
+            }
+        }
+		return maxCmdResponseLines.get("default");
 	}
 
 	protected void onDisconnect(){
@@ -268,6 +283,11 @@ public class IRCCat extends PircBot {
 	public void handleMessage(String channel_, String sender, String message) {
 		String cmd;
 		String respondTo = channel_ == null ? sender : channel_;
+
+        if (mute) {
+            // we are muted, don't say anything at all
+            return;
+        };
 		
 		
 		
@@ -356,6 +376,17 @@ public class IRCCat extends PircBot {
 				sb.append(c[i] + " ");
 			return sb.toString();
 		}
+
+        // MUTE THE BOT
+        if (method.equals("mute")) {
+          this.catStuffToAll("<" + sender + ">" + " has muted me. !unmute to unmute");
+          mute = true;
+        }
+
+        // UNMUTE THE BOT
+        if (method.equals("unmute")) {
+          mute = false;
+        }
 
 		// EXIT()
 		if (method.equals("exit"))
