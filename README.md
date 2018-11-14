@@ -1,6 +1,12 @@
-## Seeking Maintainer
+## Archived - See irccloud/irccat
 
-Want commit access? If you are using irccat and want to help reviewing the occasional pull request/issues, please message me for commit access. I don't do any java dev atm, so testing changes is a bit painful for me.
+I'm not running this java version any more, please see this [irccat clone in go](https://github.com/irccloud/irccat).
+
+
+
+
+
+
 
 
 IRCcat
