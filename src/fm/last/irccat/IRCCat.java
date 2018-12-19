@@ -117,8 +117,15 @@ public class IRCCat extends PircBot {
 						"server.password", ""));
 				if(tries>1) Thread.sleep(10000);
 			}
+                } catch (UnknownHostException uhe) {
+		        // we get stuck here on java.net.UnknownHostException
+		        // so just exit and let supervisor restart us
+			System.err.println(uhe.toString());
+			System.err.println(uhe.getMessage());
+		        System.exit(-1);
 		} catch (Exception e) {
-			System.out.println(e.toString());
+			System.err.println(e.toString());
+			System.err.println(e.getMessage());
 		}
 
 	}
@@ -335,31 +342,6 @@ public class IRCCat extends PircBot {
 			return "Joining: " + toks[1];
 		}
 
-		// PART A CHANNEL
-		if (method.equals("part") && toks.length == 2) {
-			sendMessage(toks[1], "<" + sender + "> !" + cmd);
-			partChannel(toks[1]);
-			return "Leaving: " + toks[1];
-		}
-
-		// BROADCAST MSG TO ALL CHANNELS
-		if (method.equals("spam")) {
-			this.catStuffToAll("<" + sender + "> " + cmd.substring(5));
-		}
-
-		// LIST CHANNELS THE BOT IS IN
-		if (method.equals("channels")) {
-			String[] c = getChannels();
-			StringBuffer sb = new StringBuffer("I am in " + c.length
-					+ " channels: ");
-			for (int i = 0; i < c.length; ++i)
-				sb.append(c[i] + " ");
-			return sb.toString();
-		}
-
-		// EXIT()
-		if (method.equals("exit"))
-			System.exit(0);
 
 		return "";
 	}
@@ -367,20 +349,6 @@ public class IRCCat extends PircBot {
 	public void catTopic(String stuff, String[] recips) {
 		for (int ci = 0; ci < recips.length; ci++) {
 			changeTopic(recips[ci], stuff);
-		}
-	}
-
-	public void catTopicToAll(String stuff) {
-		String[] channels = getChannels();
-		for (int i = 0; i < channels.length; i++) {
-			changeTopic(channels[i], stuff);
-		}
-	}
-
-	public void catStuffToAll(String stuff) {
-		String[] channels = getChannels();
-		for (int i = 0; i < channels.length; i++) {
-			sendMsg(channels[i], stuff);
 		}
 	}
 

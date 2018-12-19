@@ -1,3 +1,6 @@
+# Local IRCCat config
+irccat.xml
 # Ant...
 build
 dist
+*~
