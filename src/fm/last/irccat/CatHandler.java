@@ -17,85 +17,109 @@
 */
 package fm.last.irccat;
 
-import java.net.*;
-import java.io.*; 
+import java.util.List;
+import java.util.LinkedList;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.Socket;
 
-// passes command to external program and returns results back to irc
-class CatHandler  extends Thread {
-        
-        IRCCat bot;
-        Socket sock;
+/**
+ * Utility class to handle IRC cat output text.
+ * 1) Handle parsing of initial line of the outgoing text
+ * which can contain metadata about the recipients of
+ * the message (channels or users) and whether its a /topic msg.
+ *
+ * 2) call the IRC cat bot the caller passes in, sending the text lines.
+ */
+class CatHandler implements Runnable {
+  public static final String TOPIC_TOKEN = "%TOPIC";
+  public static final String ALL_CHAN_TOKEN = "#*";
 
-        CatHandler(Socket s, IRCCat b){
-            sock = s;
-            bot = b;
+  private final List<String> lines = new LinkedList<String>();
+  private final IRCCat bot;
+  private final Socket socket;
+
+  private boolean isBroadcastMessage;
+  private boolean isTopicMessage;
+  private String[] recipients = new String[0];
+
+  public CatHandler(Socket s, IRCCat b) {
+    this.socket = s;
+    this.bot = b;
+  }
+ 
+  @Override
+  public void run() {
+    try {
+      getLinesFromStream();
+      checkForTopicMessage();
+      populateRecipientList();  
+      sendLines();
+      //System.out.println("Handler finished.");
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
+  }
+ 
+  private void sendLines() {
+    for ( String line : lines ) {
+      if ( isBroadcastMessage && isTopicMessage ) {
+        bot.catTopicToAll(line);
+      } else if ( isTopicMessage ) {
+        bot.catTopic(line, recipients);
+      } else if ( isBroadcastMessage ) {
+        bot.catStuffToAll(line);
+      } else { // neither topic or broadcast
+        bot.catStuff(line, recipients);
+      }
+    }
+ }
+
+ private void getLinesFromStream() throws Exception {
+   try {
+     BufferedReader in = new BufferedReader(
+        new InputStreamReader(socket.getInputStream(), "UTF-8")
+      );
+      String line;
+      while ( null != (line = in.readLine()) ) {
+        lines.add( line.trim() );
+      }
+    } finally {
+      if ( null != socket ) {
+        socket.close();
+      }
+    } 
+ }
+
+ private void checkForTopicMessage() {
+    if ( lines.get(0).startsWith(TOPIC_TOKEN) ) {
+      isTopicMessage = true;
+      lines.set( 0, lines.get(0).substring(7) );
+    }
+ }
+
+ private void populateRecipientList() {
+    String firstLine = lines.get(0);
+    if( firstLine.startsWith(ALL_CHAN_TOKEN) ) {
+      isBroadcastMessage = true;
+      lines.set( 0, firstLine.substring(3) );
+    } else if ( firstLine.startsWith("#") || firstLine.startsWith("@") ) {
+      int length = 0, index = 0;
+      recipients = firstLine.split(",");
+      while ( index < recipients.length ) {
+        length += recipients[index].length(); // track size of text block 
+        recipients[index] = recipients[index].trim();
+        if ( recipients[index].startsWith("@") ) {
+          // to a user, strip the @ for sendMessage()
+          recipients[index] = recipients[index].substring(1); 
         }
-        
-        public void run(){
-            try{
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(
-                        sock.getInputStream(), "UTF-8"));
-                String inputLine = new String();
-                String recipients[] = null; 
-                boolean all = false;
-                boolean topic = false;
-                int i = 0;
-                while ((inputLine = in.readLine()) != null) {
-                	if(i++==0){
-                		String[] words = inputLine.split(" ");
-                		if(words[0].equals("%TOPIC")) {
-                            topic = true;
-                            inputLine = inputLine.substring(7);
-                            String[] newwords = new String[words.length-1];
-                            System.arraycopy(words, 1, newwords, 0, newwords.length);
-                            words = newwords;
-                        }
-                        if(words[0].equals("#*")){
-                			// send to all channels
-                			all = true;
-                			inputLine = inputLine.substring(3);
-                		}else
-                		if(words[0].startsWith("#") || words[0].startsWith("@")){
-                			String addressees[] = words[0].split(",");
-                			for(int j=0; j<addressees.length; ++j){
-                				if(addressees[j].startsWith("@")){
-                					// to a user, strip the @ for
-									// sendMessage()..
-                					addressees[j] = addressees[j].substring(1); 
-                				}
-                			}
-                			recipients = addressees;
-                			inputLine = inputLine.substring(words[0].length()+1);
-                		}else{
-                			// nothing specified. use default channel from
-							// config.
-                			recipients = new String[1];
-                			recipients[0] =  bot.getDefaultChannel() ;
-                		}
-                	}
-                    
-                	// now send it to the recipients:
-                	if(all) {
-                    if(topic) {
-                      bot.catTopicToAll(inputLine);
-                    }else {
-                		  bot.catStuffToAll(inputLine);
-                    }
-                  }else {
-                    if(topic) {
-                      bot.catTopic(inputLine, recipients);
-                    }else {
-                      bot.catStuff(inputLine, recipients);
-                    }
-                  }
-                }
-                in.close();
-                //System.out.println("Handler finished.");
-            }
-            catch(Exception e){ e.printStackTrace(); }
-        }
-
+        ++index;
+      }
+      lines.set( 0, lines.get(0).substring(length + index) );
+    } else {
+      recipients = new String[1];
+      recipients[0] = bot.getDefaultChannel();
+    }
+  }
 }
-
 

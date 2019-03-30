@@ -17,41 +17,55 @@
 */
 package fm.last.irccat;
 
-import java.io.*; 
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.util.List;
+import java.util.LinkedList;
 
 // hands off cmd to shell script and returns stdout to the requester
-class Scripter extends Thread {
-        IRCCat bot;
-        String nick, channel, returnName, cmd;
+class Scripter implements Runnable {
+  private final IRCCat bot;
+  private final String nick, channel, returnName, cmd;
 
-        Scripter(String nk, String ch, String r, String c, IRCCat b){
-            nick = nk;
-            channel = ch;
-            cmd = c;
-            returnName = r;
-            bot = b;
-        }
+  public Scripter( String nk, String ch, String r, String c, IRCCat b ) {
+    this.nick = nk;
+    this.channel = ch;
+    this.cmd = c;
+    this.returnName = r;
+    this.bot = b;
+  }
 
-        public void run(){
-            try{
-                Runtime runtime = Runtime.getRuntime();
-                Process process = runtime.exec(new String[]{bot.getCmdScript() ,nick + " " + channel + " " + returnName+" "+cmd});
-                InputStream is = process.getInputStream();
-                InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-                BufferedReader br = new BufferedReader(isr);
-                String line;
-                int i=0;
-                while ((line = br.readLine()) != null) {
-                    bot.sendMsg(returnName, line);
-                    if(++i==bot.getCmdMaxResponseLines()){
-                        bot.sendMsg(returnName, "<truncated, too many lines>");
-                        break;
-                    }
-                }
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-                        
+  private Process startProcess() throws Exception {
+    String message = nick + " " + channel + " " + returnName + " " + " " + cmd;
+    return new ProcessBuilder(bot.getCmdScript(), message).start();
+  }
+
+  @Override
+  public void run() {
+    BufferedReader reader = null;
+    Process process = null;
+    try {
+      process = startProcess();
+      reader = new BufferedReader( new InputStreamReader(process.getInputStream(), "UTF-8") );
+      String line;
+      int lineCount = 0;
+      while ( (line = reader.readLine()) != null) {
+        bot.sendMsg(returnName, line);
+        if ( ++lineCount == bot.getCmdMaxResponseLines() ) {
+          bot.sendMsg(returnName, "<truncated, too many lines>");
+          break;
         }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      if ( null != reader ) {
+        try { reader.close(); } catch (Exception ignored) { }
+      }
+      if ( null != process ) {
+        try { process.destroy(); } catch (Exception ignored) { }
+      }
+    }
+  }
 }
 
