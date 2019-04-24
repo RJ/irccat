@@ -22,11 +22,12 @@ import java.io.*;
 // hands off cmd to shell script and returns stdout to the requester
 class Scripter extends Thread {
         IRCCat bot;
-        String nick, channel, returnName, cmd;
+        String nick, channel, returnName, login, cmd;
 
-        Scripter(String nk, String ch, String r, String c, IRCCat b){
+        Scripter(String nk, String ch, String r, String l, String c, IRCCat b){
             nick = nk;
             channel = ch;
+            login = l;
             cmd = c;
             returnName = r;
             bot = b;
@@ -34,8 +35,13 @@ class Scripter extends Thread {
 
         public void run(){
             try{
+                String msg = nick + " " + channel + " " + returnName;
+                if (bot.getIncludeLogin()) {
+                    msg = msg + " " + login;
+                }
+                msg = msg + " " + cmd;
                 Runtime runtime = Runtime.getRuntime();
-                Process process = runtime.exec(new String[]{bot.getCmdScript() ,nick + " " + channel + " " + returnName+" "+cmd});
+                Process process = runtime.exec(new String[]{bot.getCmdScript(), msg});
                 InputStream is = process.getInputStream();
                 InputStreamReader isr = new InputStreamReader(is, "UTF-8");
                 BufferedReader br = new BufferedReader(isr);
@@ -51,7 +57,6 @@ class Scripter extends Thread {
             }catch(Exception e){
                 e.printStackTrace();
             }
-                        
         }
 }
 

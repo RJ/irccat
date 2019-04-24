@@ -9,10 +9,15 @@ import os, sys, re, subprocess
 # a script in whatever language you like. Command names are limited to [0-9a-z].
 
 path = '/usr/share/irccat/'
+includeLogin = False
 
 args = sys.argv[1]
 bits = args.split(' ')
-command = bits[3].lower()
+commandIdx = 3
+if includeLogin:
+    commandIdx = 4
+
+command = bits[commandIdx].lower()
 
 found = False
 if re.match('^[a-z0-9]+$', command):

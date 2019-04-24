@@ -28,7 +28,12 @@
 		<cmdhandler>scripts/cmd_handler.sh</cmdhandler>
 		<maxresponselines>15</maxresponselines>
 	</script>
-	
+
+    <!-- Settings for extra fields to pass to command handler before command text -->
+    <fields>
+        <includelogin>false</includelogin>
+    </fields>
+
 	<!-- Which channels to join on startup -->
 	<!-- First channel in list is "default channel", and all members are implicitly trusted -->
 	<channels>
